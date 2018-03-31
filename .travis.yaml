@@ -1,0 +1,18 @@
+language: node_js
+
+node_js:
+  - stable
+
+install:
+  - npm install
+
+lint:
+  - npm run lint
+
+build:
+  - npm mkdirs
+  - npm run build-frontend
+  - npm run build-backend
+
+script:
+  - npm run test
