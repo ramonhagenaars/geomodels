@@ -1,8 +1,8 @@
 {
   "name": "geomodels",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Javascript 6 classes that are compatible with GeoJSON.",
-  "files": ["dist/backend/geomodels.js"],
+  "files": ["dist/backend/geomodels.js", "dist/frontend/geomodels.js"],
   "main": "dist/backend/geomodels.js",
   "scripts": {
     "lint": "eslint ./src/**/*.js",
