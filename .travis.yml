@@ -5,14 +5,10 @@ node_js:
 
 install:
   - npm install
-
-lint:
-  - npm run lint
-
-build:
   - npm mkdirs
   - npm run build-frontend
   - npm run build-backend
 
 script:
+  - npm run lint
   - npm run test
