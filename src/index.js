@@ -21,4 +21,4 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  * OTHER DEALINGS IN THE SOFTWARE. */
 
-export { spatialReferenceSystems, GeoPoint, GeoMultiPoint, GeoPolygon, GeoMultiPolygon } from './geomodels';
+export { GeoPoint, GeoMultiPoint, GeoPolygon, GeoMultiPolygon } from './geomodels';
