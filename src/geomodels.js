@@ -338,6 +338,12 @@ class GeoMultiPolygon extends GeoMultiModel {
     }
 }
 
+/**
+ * An array that contains all GeoModels that are defined in this module.
+ * @type {[GeoModel]}
+ */
+const models = [GeoPoint, GeoMultiPoint, GeoPolygon, GeoMultiPolygon];
+
 function _isIterable(obj) {
     return obj && typeof obj[Symbol.iterator] === 'function';
 }
@@ -412,5 +418,8 @@ module.exports = {
     GeoPoint,
     GeoMultiPoint,
     GeoPolygon,
-    GeoMultiPolygon
+    GeoMultiPolygon,
+    GeoModel,
+    GeoMultiModel,
+    models
 };

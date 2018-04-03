@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/ramonhagenaars/geomodels.svg?branch=master)](https://travis-ci.org/ramonhagenaars/geomodels)
+[![DeepScan grade](https://deepscan.io/api/projects/2171/branches/11531/badge/grade.svg)](https://deepscan.io/dashboard#view=project&pid=2171&bid=11531)
 
 # geomodels
 Javascript classes that can be parsed to and from GeoJson.
@@ -36,10 +37,15 @@ const p = new GeoPoint(52.090694, 5.121312);
 console.log(p.toJSON());
 ```
 
-## Linting, Building, testing
+## Linting, building, testing, code coverage
 To start, make sure that all dependencies are met:
 ```
 npm install
+```
+
+To run all tasks subsequently, use:
+```
+npm run build
 ```
 
 For linting, use:
@@ -57,4 +63,9 @@ npm run build-backend
 For testing you need to build first. Then use:
 ```
 npm run test
+```
+
+For analysing the code test coverage, use:
+```
+npm run coverage
 ```

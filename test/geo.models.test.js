@@ -1,10 +1,40 @@
 const assert = require('assert');
+const models = require('../dist/backend/geomodels').models;
+const GeoModel = require('../dist/backend/geomodels').GeoModel;
+const GeoMultiModel = require('../dist/backend/geomodels').GeoMultiModel;
 const GeoPoint = require('../dist/backend/geomodels').GeoPoint;
 const GeoMultiPoint = require('../dist/backend/geomodels').GeoMultiPoint;
 const GeoPolygon = require('../dist/backend/geomodels').GeoPolygon;
 const GeoMultiPolygon = require('../dist/backend/geomodels').GeoMultiPolygon;
 
 describe('Geomodels', () => {
+    describe('#all', () => {
+        it('must define a predecessor and a successor', async function() {
+            models.forEach(model => {
+                assert.ok(model.predecessor);
+                assert.ok(model.successor);
+            });
+        });
+    });
+
+    describe('#GeoModel', () => {
+        it('must provide default values for basic methods', async function() {
+            const geoModel = new GeoModel();
+
+            assert.equal(geoModel.size, 1);
+            assert.equal(geoModel.epsg, 0);
+            assert.deepEqual(geoModel.toArray(), []);
+        });
+    });
+
+    describe('#GeoMultiModel', () => {
+        it('must provide default values for basic methods', async function() {
+            const geoMultiModel = new GeoMultiModel([]);
+
+            assert.equal(geoMultiModel.size, 0);  // 0 because the size of a GeoMultiModel is determined by its elements.
+        });
+    });
+
     describe('#GeoPoint', () => {
         it('must be possible to convert it to an array', async function() {
             const geoPoint = new GeoPoint(1, 2, 999);
