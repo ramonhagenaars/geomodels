@@ -62,6 +62,30 @@ class GeoModel {
     }
 
     /**
+     * Creates a GeoModel instance from the given GeoJson geometry object. The given argument must be a json object, not
+     * a string.
+     * @param {json} json the geometry part of a GeoJson object.
+     * @param {int} epsg (optional) the spatial reference identifier of this GeoModel.
+     * @return {GeoModel} an GeoModel instance of the type that corresponds to the given GeoJson object.
+     */
+    static fromJSON(json, epsg=0) {
+        if (!json.type || !json.coordinates) {
+            throw new TypeError(`The given JSON object is no GeoJson: \n${JSON.stringify(json)}`);
+        }
+
+        const elements = json.coordinates;
+        const geoModels = models
+            .filter(Model => Model.name == 'Geo' + json.type)
+            .map(Model => Model.fromArray(json.coordinates, epsg));
+
+        if (geoModels.length == 0) {
+            throw new TypeError(`The given type is not supported: ${json.type}`);
+        }
+
+        return geoModels[0];
+    }
+
+    /**
      * Returns this instance as an array.
      * @return {[]} this instance in array form.
      */

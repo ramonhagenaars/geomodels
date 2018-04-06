@@ -25,6 +25,18 @@ describe('Geomodels', () => {
             assert.equal(geoModel.epsg, 0);
             assert.deepEqual(geoModel.toArray(), []);
         });
+
+        it('must be able to turn any GeoModel into JSON and vice versa', async function() {
+            const geoPoint = new GeoPoint(1, 2, 999);
+            const geoMultiPoint = GeoMultiPoint.fromArray([[1, 2], [3, 4], [5, 6]], 999);
+            const geoPolygon = GeoPolygon.fromArray([[[1, 2], [3, 4]], [[1, 2], [3, 4]]], 999);
+            const geoMultiPolygon = GeoMultiPolygon.fromArray([[[[1, 2], [3, 4]], [[1, 2], [3, 4]]], [[[1, 2], [3, 4]], [[1, 2], [3, 4]]]], 999);
+
+            assert.ok(geoPoint.equals(GeoModel.fromJSON(geoPoint.toJSON(), 999)));
+            assert.ok(geoMultiPoint.equals(GeoModel.fromJSON(geoMultiPoint.toJSON(), 999)));
+            assert.ok(geoPolygon.equals(GeoModel.fromJSON(geoPolygon.toJSON(), 999)));
+            assert.ok(geoMultiPolygon.equals(GeoModel.fromJSON(geoMultiPolygon.toJSON(), 999)));
+        });
     });
 
     describe('#GeoMultiModel', () => {
