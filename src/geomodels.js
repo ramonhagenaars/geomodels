@@ -27,6 +27,14 @@
 class GeoModel {
 
     /**
+     * Generic constructor for all GeoModel subclasses.
+     * @param {int} epsg (optional) the well-known id of this GeoPoint.
+     */
+    constructor(epsg) {
+        this._epsg = epsg;
+    }
+
+    /**
      * The size of a model, which is the number of single atomic elements.
      * @return {number} the size of this Model.
      */
@@ -40,7 +48,7 @@ class GeoModel {
      * @return {int} the identifier of the spatial reference of this GeoModel or 0 if unset.
      */
     get epsg() {
-        return 0;
+        return this._epsg;
     }
 
     /**
@@ -95,7 +103,7 @@ class GeoModel {
 
     /**
      * 'Promotes' this instance to a GeoModel of the given class type.
-     * @param {GeoModel} clazz a class of a GeoModel that is to be returned.
+     * @param {class<GeoModel>} clazz a class of a GeoModel that is to be returned.
      * @return {GeoModel} a new instance of type clazz.
      */
     promoteTo(clazz) {
@@ -132,12 +140,20 @@ class GeoMultiModel extends GeoModel {
 
     /**
      * Generic constructor for all GeoMultiModel subclasses.
-     * @param {[GeoModel]} elements the GeoModels of which this instance consists.
+     * @param {[GeoModel]} elements the elements of which this instance consists.
      */
     constructor(elements) {
-        super();
+        super(this.elements[0].epsg);
 
-        this.elements = elements;
+        this._elements = elements;
+    }
+
+    /**
+     * The elements of which this instance consists.
+     * @return {[GeoModel]} the elements of which this instance consists.
+     */
+    get elements() {
+        return this._elements;
     }
 
     /**
@@ -157,22 +173,30 @@ class GeoMultiModel extends GeoModel {
     }
 
     /**
-     * An identifier that represents the spatial reference of this GeoMultiModel. For example, 'World Geodetic System
-     * 1984' (i.e. WGS 84 also informally referred to as 'latlon') would be 4326. This method naively assumes that all
-     * elements of this GeoMultiModel hold the same epsg.
-     * @return {int} the identifier of the spatial reference of this GeoModel or 0 if unset.
-     */
-    get epsg() {
-        return this.elements[0].epsg;
-    }
-
-    /**
      * Returns an array of the GeoModels of which this instance consists. Possibly, a multidimensional is returned if
      * the elements of this instance are GeoMultiModels.
      * @return {Array} the GeoModels (as arrays) of which this instance consists.
      */
     toArray() {
         return this.elements.map(geoModel => geoModel.toArray());
+    }
+
+    /**
+     * Creates a new GeoMultiModel instance from the given array.
+     *
+     * Example usage:
+     *
+     *  const newGeoMultiPoint = GeoMultiPoint.fromArray([[1, 2], [3, 4], [5, 6], 4326]);
+     *
+     * @param {Array} array an array of arrays.
+     * @param {int} epsg (optional) the spatial reference identifier of this GeoModel.
+     * @return {GeoMultiModel} a new GeoMultiModel instance.
+     */
+    static fromArray(array, epsg=0) {
+        const clazz = _getClass(this);
+        const elements = array.map(subArray => clazz.predecessor.fromArray(subArray, epsg));
+
+        return new clazz(elements);
     }
 
     /**
@@ -199,7 +223,7 @@ class GeoMultiModel extends GeoModel {
      *   const newGeoMultiPolygon = geoMultiPolygon
      *      .mapSubElements(GeoPoint, geoPoint => new GeoPoint(geoPoint.x + 1, geoPoint.y + 1, geoPoint.epsg));
      *
-     * @param {class} clazz the class of the GeoModel that is to be mapped.
+     * @param {class<GeoModel>} clazz the class of the GeoModel that is to be mapped.
      * @param {Function} mapperFunction a mapper function that accepts an instance of the corresponding GeoModel.
      * @return {GeoMultiModel} a new GeoMultiModel instance of the same type as this instance.
      */
@@ -217,24 +241,6 @@ class GeoMultiModel extends GeoModel {
     flatten() {
         return this.constructor.predecessor.fromArray(this.elements[0].toArray(), this.epsg);
     }
-
-    /**
-     * Creates a new GeoMultiModel instance from the given array.
-     *
-     * Example usage:
-     *
-     *  const newGeoMultiPoint = GeoMultiPoint.fromArray([[1, 2], [3, 4], [5, 6], 4326]);
-     *
-     * @param {Array} array an array of arrays.
-     * @param {int} epsg (optional) the spatial reference identifier of this GeoModel.
-     * @return {GeoMultiModel} a new GeoMultiModel instance.
-     */
-    static fromArray(array, epsg=0) {
-        const clazz = _getClass(this);
-        const elements = array.map(subArray => clazz.predecessor.fromArray(subArray, epsg));
-
-        return new clazz(elements);
-    }
 }
 
 /**
@@ -249,20 +255,10 @@ class GeoPoint extends GeoModel {
      * @param {int} epsg (optional) the well-known id of this GeoPoint.
      */
     constructor(x, y, epsg=0) {
-        super();
+        super(epsg);
 
         this.x = x;
         this.y = y;
-        this._epsg = epsg;
-    }
-
-    /**
-     * An identifier that represents the spatial reference of this GeoModel. For example, 'World Geodetic System 1984'
-     * (i.e. WGS 84 also informally referred to as 'latlon') would be 4326.
-     * @return {int} the identifier of the spatial reference of this GeoModel or 0 if unset.
-     */
-    get epsg() {
-        return this._epsg;
     }
 
     /**
@@ -290,7 +286,7 @@ class GeoPoint extends GeoModel {
 
     /**
      * Returns the GeoModel class which instances are contained by instances of this class.
-     * @return {GeoPoint} a class.
+     * @return {class<GeoPoint>} a class.
      */
     static get predecessor() {
         return GeoPoint;
@@ -298,7 +294,7 @@ class GeoPoint extends GeoModel {
 
     /**
      * Return the GeoMultiModel class of which the instances may contain instances of this class.
-     * @return {GeoMultiPoint} a class.
+     * @return {class<GeoMultiPoint>} a class.
      */
     static get successor() {
         return GeoMultiPoint;
@@ -309,7 +305,7 @@ class GeoMultiPoint extends GeoMultiModel {
 
     /**
      * * Returns the GeoModel class which instances are contained by instances of this class.
-     * @return {GeoPoint} a class.
+     * @return {class<GeoPoint>} a class.
      */
     static get predecessor() {
         return GeoPoint;
@@ -317,7 +313,7 @@ class GeoMultiPoint extends GeoMultiModel {
 
     /**
      * Return the GeoMultiModel class of which the instances may contain instances of this class.
-     * @return {GeoPolygon} a class.
+     * @return {class<GeoPolygon>} a class.
      */
     static get successor() {
         return GeoPolygon;
@@ -328,7 +324,7 @@ class GeoPolygon extends GeoMultiModel {
 
     /**
      * * Returns the GeoModel class which instances are contained by instances of this class.
-     * @return {GeoMultiPoint} a class.
+     * @return {class<GeoMultiPoint>} a class.
      */
     static get predecessor() {
         return GeoMultiPoint;
@@ -336,7 +332,7 @@ class GeoPolygon extends GeoMultiModel {
 
     /**
      * Return the GeoMultiModel class of which the instances may contain instances of this class.
-     * @return {GeoMultiPolygon} a class.
+     * @return {class<GeoMultiPolygon>} a class.
      */
     static get successor() {
         return GeoMultiPolygon;
@@ -347,7 +343,7 @@ class GeoMultiPolygon extends GeoMultiModel {
 
     /**
      * * Returns the GeoModel class which instances are contained by instances of this class.
-     * @return {GeoPolygon} a class.
+     * @return {class<GeoPolygon>} a class.
      */
     static get predecessor() {
         return GeoPolygon;
@@ -355,7 +351,7 @@ class GeoMultiPolygon extends GeoMultiModel {
 
     /**
      * Return the GeoMultiModel class of which the instances may contain instances of this class.
-     * @return {GeoMultiPolygon} a class.
+     * @return {class<GeoMultiPolygon>} a class.
      */
     static get successor() {
         return GeoMultiPolygon;
