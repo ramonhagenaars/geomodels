@@ -30,7 +30,7 @@ class GeoModel {
      * Generic constructor for all GeoModel subclasses.
      * @param {int} epsg (optional) the well-known id of this GeoPoint.
      */
-    constructor(epsg) {
+    constructor(epsg = 0) {
         this._epsg = epsg;
     }
 
@@ -143,7 +143,7 @@ class GeoMultiModel extends GeoModel {
      * @param {[GeoModel]} elements the elements of which this instance consists.
      */
     constructor(elements) {
-        super(this.elements[0].epsg);
+        super(elements[0].epsg);
 
         this._elements = elements;
     }

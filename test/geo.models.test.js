@@ -41,9 +41,9 @@ describe('Geomodels', () => {
 
     describe('#GeoMultiModel', () => {
         it('must provide default values for basic methods', async function() {
-            const geoMultiModel = new GeoMultiModel([]);
+            const geoMultiModel = new GeoMultiModel([new GeoModel(), new GeoModel()]);
 
-            assert.equal(geoMultiModel.size, 0);  // 0 because the size of a GeoMultiModel is determined by its elements.
+            assert.equal(geoMultiModel.size, 2);  // 2 because the size of a GeoMultiModel is determined by its elements.
         });
     });
 
