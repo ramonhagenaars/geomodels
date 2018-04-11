@@ -6,7 +6,7 @@ Javascript classes that can be parsed to and from GeoJson.
 
 ## Installation
 ```
-npm install geomodels
+npm i geomodels
 ```
 
 ## Getting started
