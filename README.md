@@ -9,6 +9,19 @@ Javascript classes that can be parsed to and from GeoJson.
 npm i geomodels
 ```
 
+## Example usage
+```
+const geoJSON = {  
+    "type": "MultiPoint", 
+    "coordinates": [[0, 0], [1, 1], [2, 2]]
+};
+  
+const multiPoint = GeoModel.fromJSON(geoJSON);  
+
+const mappedMultiPoint = multiPoint.mapSubElements(GeoPoint,  
+    p => new GeoPoint(p.x + 1, p.y + 1, p.epsg));
+```
+
 ## Getting started
 The GeoModels module can be used on the server-side with Node.js as well as in the browser.
 
