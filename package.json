@@ -4,17 +4,20 @@
   "description": "Javascript 6 classes that are compatible with GeoJSON.",
   "files": [
     "dist/backend/geomodels.js",
-    "dist/frontend/geomodels.js"
+    "dist/frontend/geomodels.js",
+    "dist/ts/geomodels.d.ts"
   ],
+  "types": "dist/ts/geomodels.ds.ts",
   "main": "dist/backend/geomodels.js",
   "scripts": {
-    "lint": "eslint ./src/**/*.js",
-    "mkdirs": "node node_modules/mkdirp/bin/cmd.js dist/backend dist/frontend",
+    "lint": "eslint src/**/*.js",
+    "mkdirs": "node node_modules/mkdirp/bin/cmd.js dist/backend dist/frontend dist/ts",
     "build-frontend": "node node_modules/webpack/bin/webpack.js",
     "build-backend": "node node_modules/uglify-js-es6/bin/uglifyjs src/geomodels.js -o dist/backend/geomodels.js --comments all",
+    "types": "node node_modules/copyfiles/copyfiles src/geomodels.d.ts dist/ts -f",
     "test": "node node_modules/mocha/bin/mocha test",
     "coverage": "node node_modules/nyc/bin/nyc.js --check-coverage --lines 100 --per-file npm test",
-    "build": "npm run lint && npm run mkdirs && npm run build-frontend && npm run build-backend && npm run coverage"
+    "build": "npm run lint && npm run mkdirs && npm run build-frontend && npm run build-backend && npm run types && npm run test && npm run coverage"
   },
   "keywords": [
     "GeoJSON",
@@ -27,6 +30,7 @@
   "author": "Ramon Hagenaars",
   "license": "MIT",
   "devDependencies": {
+    "copyfiles": "~2.0.0",
     "eslint": "~4.19.1",
     "mkdirp": "~0.5.1",
     "mocha": "~5.0.1",
