@@ -81,7 +81,6 @@ class GeoModel {
             throw new TypeError(`The given JSON object is no GeoJson: \n${JSON.stringify(json)}`);
         }
 
-        const elements = json.coordinates;
         const geoModels = models
             .filter(Model => Model.name == 'Geo' + json.type)
             .map(Model => Model.fromArray(json.coordinates, epsg));
