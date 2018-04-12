@@ -210,7 +210,7 @@ class GeoMultiModel extends GeoModel {
      * @return {GeoMultiModel} a new GeoMultiModel instance of the same type as this instance.
      */
     mapElements(mapperFunction) {
-        return new this.constructor(this.elements.map(mapperFunction), this.epsg);
+        return new this.constructor(this.elements.map(mapperFunction));
     }
 
     /**
