@@ -1,5 +1,7 @@
 const assert = require('assert');
 const models = require('../dist/backend/geomodels').models;
+const Feature = require('../dist/backend/geomodels').Feature;
+const FeatureCollection = require('../dist/backend/geomodels').FeatureCollection;
 const GeoModel = require('../dist/backend/geomodels').GeoModel;
 const GeoMultiModel = require('../dist/backend/geomodels').GeoMultiModel;
 const GeoPoint = require('../dist/backend/geomodels').GeoPoint;
@@ -14,6 +16,145 @@ describe('Geomodels', () => {
                 assert.ok(model.predecessor);
                 assert.ok(model.successor);
             });
+        });
+    });
+
+    describe('#Feature', () => {
+        it('must convert to JSON correctly', async function() {
+            const f = new Feature(new GeoPoint(10, 20), {some_prop: 'some value'});
+            const j = {
+                type: 'feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [10, 20]
+                },
+                properties: {
+                    some_prop: 'some value'
+                }
+            };
+
+            assert.deepEqual(f.toJSON(), j);
+        });
+
+        it('must use null values for absent properties and geometry', async function() {
+            const f = new Feature();
+            const j = {
+                type: 'feature',
+                geometry: null,
+                properties: null
+            };
+
+            assert.deepEqual(f.toJSON(), j);
+        });
+
+        it('must convert from JSON correctly', async function() {
+            const j1 = {
+                type: 'feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [10, 20]
+                },
+                properties: {
+                    some_prop: 'some value'
+                }
+            };
+
+            const j2 = {
+                type: 'feature',
+                properties: {
+                    some_prop: 'some value'
+                }
+            };
+
+            const j2e = {
+                type: 'feature',
+                geometry: null,
+                properties: {
+                    some_prop: 'some value'
+                }
+            };
+
+            const j3 = {
+                type: 'feature'
+            };
+
+            const j3e = {
+                type: 'feature',
+                geometry: null,
+                properties: null
+            };
+
+            const f1 = Feature.fromJSON(j1);
+            const f2 = Feature.fromJSON(j2);
+            const f3 = Feature.fromJSON(j3);
+
+            assert.deepEqual(f1.toJSON(), j1);
+            assert.deepEqual(f2.toJSON(), j2e);
+            assert.deepEqual(f3.toJSON(), j3e);
+        });
+    });
+
+    describe('#FeatureCollection', () => {
+        it('must convert to JSON correctly', async function () {
+            const f1 = new Feature(new GeoPoint(10, 20), {some_prop: 'some value1'});
+            const f2 = new Feature(new GeoPoint(30, 40), {some_prop: 'some value2'});
+            const fc = new FeatureCollection([f1, f2]);
+
+            const j = {
+                type: 'FeatureCollection',
+                features: [
+                    {
+                        type: 'feature',
+                        geometry: {
+                            type: 'Point',
+                            coordinates: [10, 20]
+                        },
+                        properties: {
+                            some_prop: 'some value1'
+                        }
+                    }, {
+                        type: 'feature',
+                        geometry: {
+                            type: 'Point',
+                            coordinates: [30, 40]
+                        },
+                        properties: {
+                            some_prop: 'some value2'
+                        }
+                    }]
+            };
+
+            assert.deepEqual(fc.toJSON(), j);
+        });
+
+        it('must convert from JSON correctly', async function () {
+            const j = {
+                type: 'FeatureCollection',
+                features: [
+                    {
+                        type: 'feature',
+                        geometry: {
+                            type: 'Point',
+                            coordinates: [10, 20]
+                        },
+                        properties: {
+                            some_prop: 'some value1'
+                        }
+                    }, {
+                        type: 'feature',
+                        geometry: {
+                            type: 'Point',
+                            coordinates: [30, 40]
+                        },
+                        properties: {
+                            some_prop: 'some value2'
+                        }
+                    }]
+            };
+
+            const fc = FeatureCollection.fromJSON(j);
+
+            assert.deepEqual(fc.toJSON(), j);
         });
     });
 

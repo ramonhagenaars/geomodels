@@ -22,6 +22,103 @@
  * OTHER DEALINGS IN THE SOFTWARE. */
 
 /**
+ * This is a class representation of the GeoJson feature. It can represent any object that is bound to a certain
+ * location, such as a building or an area.
+ */
+class Feature {
+    /**
+     * Constructor.
+     * @param {GeoModel} geometry a GeoModel instance.
+     * @param {json} properties a JSON object that may contain anything.
+     */
+    constructor(geometry=null, properties=null) {
+        this.geometry = geometry;
+        this.properties = properties;
+    }
+
+    /**
+     * Returns this instance in JSON format according to the GeoJSON format.
+     *
+     * For more info, see:
+     * https://tools.ietf.org/html/rfc7946
+     *
+     * @returns {json} this Feature in JSON format.
+     */
+    toJSON() {
+        return {
+            type: 'feature',
+            geometry: this.geometry ? this.geometry.toJSON() : null,
+            properties: this.properties
+        };
+    }
+
+    /**
+     * Creates a Feature instance from the given JSON object. If the given JSON contains geometry, it is parsed to a
+     * GeoModel instance. The given argument must be a JSON object, not a string.
+     * @param {json} json a JSON object that is a feature according to the GeoJson specification.
+     * @param {int} epsg (optional) the spatial reference identifier of the geometry of this feature.
+     * @return {Feature} a Feature instance.
+     */
+    static fromJSON(json, epsg=0) {
+        if (!json.type) {
+            throw new TypeError(`The given JSON object is no GeoJson: \n${JSON.stringify(json)}`);
+        }
+
+        let geometry = null;
+        if (json.geometry) {
+            geometry = GeoModel.fromJSON(json.geometry, epsg);
+        }
+
+        return new Feature(geometry, json.properties);
+    }
+}
+
+/**
+ * Instances of this class hold a collection of Feature instances. It can be used to group multiple Features together.
+ */
+class FeatureCollection {
+    /**
+     * Constructor.
+     * @param {[Feature]} features an array of Feature instances.
+     */
+    constructor(features=[]) {
+        this.features = features;
+    }
+
+    /**
+     * Returns this instance in JSON format according to the GeoJSON format.
+     *
+     * For more info, see:
+     * https://tools.ietf.org/html/rfc7946
+     *
+     * @returns {json} this Feature in JSON format.
+     */
+    toJSON() {
+        return {
+            type: 'FeatureCollection',
+            features: this.features.map(feature => feature.toJSON())
+        };
+    }
+
+    /**
+     * Creates a FeatureCollection instance from the given JSON object. All features within the given collection are
+     * parsed to Feature instances. The given argument must be a JSON object, not a string.
+     * @param {json} json a JSON object that is a featureCollection according to the GeoJson specification.
+     * @param {int} epsg (optional) the spatial reference identifier of any geometries of any features within the
+     * collection.
+     * @return {FeatureCollection} a FeatureCollection instance.
+     */
+    static fromJSON(json, epsg=0) {
+        if (!json.type || !json.features) {
+            throw new TypeError(`The given JSON object is no GeoJson: \n${JSON.stringify(json)}`);
+        }
+
+        const features = json.features.map(Feature.fromJSON);
+        return new FeatureCollection(features);
+    }
+}
+
+/**
  * Base class for all geometry classes.
  */
 class GeoModel {
@@ -57,7 +154,7 @@ class GeoModel {
      * For more info, see:
      * https://tools.ietf.org/html/rfc7946
      *
-     * @returns {string} this GeoMultiPoint in JSON format.
+     * @returns {json} this GeoMultiPoint in JSON format.
      */
     toJSON() {
         // All GeoModel classes must be suffixed with the corresponding GeoJSON type.
@@ -70,7 +167,7 @@ class GeoModel {
     }
 
     /**
-     * Creates a GeoModel instance from the given GeoJson geometry object. The given argument must be a json object, not
+     * Creates a GeoModel instance from the given GeoJson geometry object. The given argument must be a JSON object, not
      * a string.
      * @param {json} json the geometry part of a GeoJson object.
      * @param {int} epsg (optional) the spatial reference identifier of this GeoModel.
@@ -434,6 +531,8 @@ function _getClass(object) {
 }
 
 module.exports = {
+    Feature,
+    FeatureCollection,
     GeoPoint,
     GeoMultiPoint,
     GeoPolygon,

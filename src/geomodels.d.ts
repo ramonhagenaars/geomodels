@@ -2,6 +2,18 @@
 
 export type AnyClass = { new (): any };
 
+export declare class Feature {
+	constructor(geometry?: GeoModel, properties?: JSON);
+	toJSON(): JSON;
+	static fromJSON(json: JSON, epsg?: number): Feature;
+}
+
+export declare class FeatureCollection {
+	constructor(features?: Array<Feature>);
+	toJSON(): JSON;
+	static fromJSON(json: JSON, epsg?: number): FeatureCollection;
+}
+
 export declare abstract class GeoModel {
 	constructor(epsg: number);
 	size: number;
